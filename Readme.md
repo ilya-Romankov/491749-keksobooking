@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Илья Романков](https://up.htmlacademy.ru/javascript/16/user/491749).
-* Наставник: `Неизвестно`.
+* Наставник: [Екатерина Кащенко](https://htmlacademy.ru/profile/id109008).
 
 ---
 

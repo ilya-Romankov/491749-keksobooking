@@ -56,7 +56,7 @@ var generateAdvert = function(advertsCount) {
 
       offer: {
         title: titles[i],
-        address: x + ',' + y,
+        address: x + ', ' + y,
         price: getRandomNumber(MIN_PRICE, MAX_PRICE),
         type: getRandomIndexElement(types),
         rooms: getRandomNumber(MIN_ROOMS, MAX_ROOMS),
@@ -75,4 +75,54 @@ var generateAdvert = function(advertsCount) {
     manyAdverts.push(oneAdvert);
   }
   return  manyAdverts;
-}
+};
+
+
+//Отрисуем метки
+var manyAdverts = generateAdvert(ADVERTISING_COUNT);
+
+var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+
+var pinElements = document.querySelector('.map__pins');
+
+var getPin = function(charactersPin) {
+  var pinOneElement = pinTemplate.cloneNode(true);
+  pinOneElement.style = 'left:' + charactersPin.location.x + 'px;' + 'top:' + charactersPin.location.y + 'px;';
+  pinOneElement.querySelector('img').src = charactersPin.author.avatar;
+  pinOneElement.querySelector('img').alt = charactersPin.offer.title;
+  return pinOneElement;
+};
+
+var getPinFragment = function() {
+  var pinFragment = document.createDocumentFragment();
+  for (var i = 0; i < manyAdverts.length; i++) {
+    pinFragment.appendChild(getPin(manyAdverts[i]));
+  }
+  pinElements.appendChild(pinFragment);
+};
+
+getPinFragment();
+
+
+// Отрисуем объявления
+
+var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+
+
+var getCard = function(charactersCard) {
+  var cardOneElement = cardTemplate.CloneNode(true);
+  cardOneElement.querySelector('.popup__avatar').src = charactersCard.author.avatar;
+  cardOneElement.querySelector('.popup__title').textContent = charactersCard.offer.title;
+  cardOneElement.querySelector('.type').textContent = charactersCard.offer.type;
+  cardOneElement.querySelector('.popup__text--capacity').textContent = charactersCard.offer.rooms + 'комнаты для ' + charactersCard.offer.rooms + 'гостей';
+  cardOneElement.querySelector('.popup__text--time').textContent = 'Заезд до ' + charactersCard.offer.checkin + ', выезд после ' + charactersCard.offer.checkout;
+};
+
+var getCardFragment = function() {
+  var cardFragment = document.createDocumentFragment();
+  for (var i = 0;  manyAdverts.length; i++) {
+      cardFragment.appendChild(getCard(manyAdverts[i]));
+  };
+};
+
+ getCardFragment();

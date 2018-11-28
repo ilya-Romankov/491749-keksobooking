@@ -106,23 +106,39 @@ getPinFragment();
 
 // Отрисуем объявления
 
-var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-
+var getPhotos = function(photosArr) {
+  var photosFragment = document.createDocumentFragment();
+  var photosTemplate = document.querySelector('#card')
+  .content
+  .querySelector('.popup__photos');
+  var photosOneElement = photosTemplate.cloneNode(true);
+  for (var i = 0; i < photosArr; i++) {
+    photosOneElement.querySelector('img').src = photosArr[i];
+    photosFragment.appendChild(photosOneElement);
+  }
+  return photosFragment;
+};
 
 var getCard = function(charactersCard) {
-  var cardOneElement = cardTemplate.CloneNode(true);
+  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var cardOneElement = cardTemplate.cloneNode(true);
   cardOneElement.querySelector('.popup__avatar').src = charactersCard.author.avatar;
   cardOneElement.querySelector('.popup__title').textContent = charactersCard.offer.title;
-  cardOneElement.querySelector('.type').textContent = charactersCard.offer.type;
+  cardOneElement.querySelector('.popup__text--address').textContent = charactersCard.offer.address;
+  cardOneElement.querySelector('.popup__text--price').textContent = charactersCard.offer.price + '/ночь';
+  cardOneElement.querySelector('.popup__type').textContent = charactersCard.offer.type;
   cardOneElement.querySelector('.popup__text--capacity').textContent = charactersCard.offer.rooms + 'комнаты для ' + charactersCard.offer.rooms + 'гостей';
   cardOneElement.querySelector('.popup__text--time').textContent = 'Заезд до ' + charactersCard.offer.checkin + ', выезд после ' + charactersCard.offer.checkout;
+  cardOneElement.querySelector('.popup__description').textContent = charactersCard.offer.description;
+  cardOneElement.querySelector('.popup__photos').appendChild(getPhotos(charactersCard.offer.photos));
+  cardOneElement.querySelector('.popup__photos').textContent = '';
+  return cardOneElement;
 };
 
 var getCardFragment = function() {
   var cardFragment = document.createDocumentFragment();
-  for (var i = 0;  manyAdverts.length; i++) {
-      cardFragment.appendChild(getCard(manyAdverts[i]));
-  };
+  cardFragment.appendChild(getCard(manyAdverts[2]));
+  document.querySelector('.map').insertBefore(cardFragment, document.querySelector('.map__filter-container'));
 };
 
  getCardFragment();

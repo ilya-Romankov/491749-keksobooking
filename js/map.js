@@ -30,20 +30,20 @@ var getRandomIndexElement = function (array) {
   return array[Math.floor(Math.random() * array.length)];
 };
 
+// Генерируем аватар пользователя
+
+var getAvatarUser = function (indexAvatarImage) {
+  var auxiliaryIndex = indexAvatarImage + 1;
+  return 'img/avatars/user0' + auxiliaryIndex + '.png';
+};
+
 //  Генерируем случайную длинну
 var getRandomLength = function (array) {
   return array.slice(getRandomNumber(0, array.length - 1));
 };
 
 var generateAdvert = function (advertsCount) {
-  var manyAdverts = [];
-
-  // Генерируем аватар пользователя
-
-  var getAvatarUser = function (indexAvatarImage) {
-    var auxiliaryIndex = indexAvatarImage + 1;
-    return 'img/avatars/user0' + auxiliaryIndex + '.png';
-  };
+  var adverts = [];
 
   for (var i = 0; i < advertsCount; i++) {
     var x = getRandomNumber(LOCATION_MIN_X, LOCATION_MAX_X);
@@ -72,14 +72,14 @@ var generateAdvert = function (advertsCount) {
         y: y
       }
     };
-    manyAdverts.push(oneAdvert);
+    adverts.push(oneAdvert);
   }
-  return manyAdverts;
+  return adverts;
 };
 
 
 //  Отрисуем метки
-var manyAdverts = generateAdvert(ADVERTISING_COUNT);
+var adverts = generateAdvert(ADVERTISING_COUNT);
 
 var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 
@@ -93,15 +93,15 @@ var getPin = function (charactersPin) {
   return pinOneElement;
 };
 
-var getPinFragment = function () {
+var getPinFragment = function (advertes) {
   var pinFragment = document.createDocumentFragment();
-  for (var i = 0; i < manyAdverts.length; i++) {
-    pinFragment.appendChild(getPin(manyAdverts[i]));
+  for (var i = 0; i < advertes.length; i++) {
+    pinFragment.appendChild(getPin(advertes[i]));
   }
   pinElements.appendChild(pinFragment);
 };
 
-getPinFragment();
+getPinFragment(adverts);
 
 
 // Отрисуем объявления
@@ -110,8 +110,8 @@ var getPhotos = function (photosArr) {
   var photosFragment = document.createDocumentFragment();
   for (var i = 0; i < photosArr.length; i++) {
     var photosTemplate = document.querySelector('#card')
-    .content
-    .querySelector('.popup__photos');
+      .content
+      .querySelector('.popup__photos');
     var photosOneElement = photosTemplate.cloneNode(true);
     photosOneElement.querySelector('img').src = photosArr[i];
     photosOneElement.querySelector('img').width = 60;
@@ -151,7 +151,7 @@ var getCard = function (charactersCard) {
 
 var getCardFragment = function () {
   var cardFragment = document.createDocumentFragment();
-  cardFragment.appendChild(getCard(manyAdverts[2]));
+  cardFragment.appendChild(getCard(adverts[2]));
   document.querySelector('.map').insertBefore(cardFragment, document.querySelector('.map__filter-container'));
 };
 

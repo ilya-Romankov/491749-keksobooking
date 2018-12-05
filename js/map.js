@@ -101,9 +101,6 @@ var getPinFragment = function (advertes) {
   pinElements.appendChild(pinFragment);
 };
 
-getPinFragment(adverts);
-
-
 // Отрисуем объявления
 
 var getPhotos = function (photosArr) {
@@ -149,10 +146,71 @@ var getCard = function (charactersCard) {
   return cardOneElement;
 };
 
-var getCardFragment = function () {
-  var cardFragment = document.createDocumentFragment();
-  cardFragment.appendChild(getCard(adverts[2]));
-  document.querySelector('.map').insertBefore(cardFragment, document.querySelector('.map__filter-container'));
+// var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
+var mapUser = document.querySelector('.map');
+var bigPin = document.querySelector('.map__pin--main');
+var form = document.querySelector('.ad-form');
+var fieldsets = document.querySelectorAll('fieldset');
+var address = document.querySelector('#address');
+
+// Активируем карту
+
+var activeForm = function (arr) {
+  form.classList.remove('ad-form--disabled');
+  fieldsets.forEach(function (item) {
+    item.removeAttribute('disabled');
+  });
+  address.value = arr[2].offer.address;
 };
 
-getCardFragment();
+
+// Соберём все нужные компоненты активации
+var activePage = function () {
+  mapUser.classList.remove('map--faded');
+  getPinFragment(adverts);
+  activeForm(adverts);
+};
+
+bigPin.addEventListener('mouseup', function () {
+  activePage();
+});
+
+// Отрисуем карточки по клику и закрытие
+
+var getPopup = function (advertsArr) {
+  var cardOneFragment = document.createDocumentFragment();
+  cardOneFragment.appendChild(getCard(advertsArr[2]));
+  mapUser.insertBefore(cardOneFragment, document.querySelector('.map__filters-container'));
+};
+
+var getClosePopup = function () {
+  var popupClose = document.querySelector('.map__card');
+  if (!(popupClose === null)) {
+    mapUser.removeChild(popupClose);
+  }
+};
+
+var activeCard = function () {
+  var exitPin = pinElements.querySelectorAll('.map__pin:not(.map__pin--main)');
+  for (var i = 0; i < exitPin.length; i++) {
+    exitPin[i].addEventListener('click', function (evtClick) {
+      getPopup(adverts, evtClick.currentTarget.dataset.adNumber);
+
+      var popupCloseBtn = document.querySelector('.popup__close');
+      popupCloseBtn.addEventListener('click', function () {
+        getClosePopup();
+      });
+    });
+  }
+};
+
+pinElements.addEventListener('click', activeCard);
+
+// Открытие по клавише
+document.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activeCard();
+  }
+});

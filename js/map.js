@@ -181,13 +181,13 @@ bigPin.addEventListener('mouseup', function () {
 
 var getPopup = function (advertsArr) {
   var cardOneFragment = document.createDocumentFragment();
-  cardOneFragment.appendChild(getCard(advertsArr[2]));
+  cardOneFragment.appendChild(getCard(advertsArr[4]));
   mapUser.insertBefore(cardOneFragment, document.querySelector('.map__filters-container'));
 };
 
 var getClosePopup = function () {
   var popupClose = document.querySelector('.map__card');
-  if (!(popupClose === null)) {
+  if (popupClose !== null) {
     mapUser.removeChild(popupClose);
   }
 };
@@ -195,9 +195,9 @@ var getClosePopup = function () {
 var activeCard = function () {
   var exitPin = pinElements.querySelectorAll('.map__pin:not(.map__pin--main)');
   for (var i = 0; i < exitPin.length; i++) {
-    exitPin[i].addEventListener('click', function (evtClick) {
-      getPopup(adverts, evtClick.currentTarget.dataset.adNumber);
-
+    exitPin[i].addEventListener('click', function () {
+      getClosePopup();
+      getPopup(adverts);
       var popupCloseBtn = document.querySelector('.popup__close');
       popupCloseBtn.addEventListener('click', function () {
         getClosePopup();

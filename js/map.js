@@ -148,7 +148,7 @@ var getCard = function (charactersCard, index) {
   return cardOneElement;
 };
 
-// var ESC_KEYCODE = 27;
+var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
 var mapUser = document.querySelector('.map');
@@ -218,6 +218,12 @@ var activeCard = function () {
 };
 
 pinElements.addEventListener('click', activeCard);
+
+document.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeCard();
+  }
+});
 
 // Открытие по клавише
 document.addEventListener('keydown', function (evt) {

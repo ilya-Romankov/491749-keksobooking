@@ -70,7 +70,8 @@ var generateAdvert = function (advertsCount) {
       location: {
         x: x,
         y: y
-      }
+      },
+      order: i
     };
     adverts.push(oneAdvert);
   }
@@ -90,6 +91,7 @@ var getPin = function (charactersPin) {
   pinOneElement.style = 'left:' + charactersPin.location.x + 'px;' + 'top:' + charactersPin.location.y + 'px;';
   pinOneElement.querySelector('img').src = charactersPin.author.avatar;
   pinOneElement.querySelector('img').alt = charactersPin.offer.title;
+  pinOneElement.setAttribute('data-order', charactersPin.order);
   return pinOneElement;
 };
 
@@ -100,9 +102,6 @@ var getPinFragment = function (advertes) {
   }
   pinElements.appendChild(pinFragment);
 };
-
-getPinFragment(adverts);
-
 
 // Отрисуем объявления
 
@@ -131,28 +130,104 @@ var getFeatures = function (featuresArr) {
   return featuresFragment;
 };
 
-var getCard = function (charactersCard) {
+var getCard = function (charactersCard, index) {
   var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
   var cardOneElement = cardTemplate.cloneNode(true);
-  cardOneElement.querySelector('.popup__avatar').src = charactersCard.author.avatar;
-  cardOneElement.querySelector('.popup__title').textContent = charactersCard.offer.title;
-  cardOneElement.querySelector('.popup__text--address').textContent = charactersCard.offer.address;
-  cardOneElement.querySelector('.popup__text--price').textContent = charactersCard.offer.price + '/ночь';
-  cardOneElement.querySelector('.popup__type').textContent = charactersCard.offer.type;
-  cardOneElement.querySelector('.popup__text--capacity').textContent = charactersCard.offer.rooms + 'комнаты для ' + charactersCard.offer.rooms + 'гостей';
-  cardOneElement.querySelector('.popup__text--time').textContent = 'Заезд до ' + charactersCard.offer.checkin + ', выезд после ' + charactersCard.offer.checkout;
+  cardOneElement.querySelector('.popup__avatar').src = charactersCard[index].author.avatar;
+  cardOneElement.querySelector('.popup__title').textContent = charactersCard[index].offer.title;
+  cardOneElement.querySelector('.popup__text--address').textContent = charactersCard[index].offer.address;
+  cardOneElement.querySelector('.popup__text--price').textContent = charactersCard[index].offer.price + '$  /ночь';
+  cardOneElement.querySelector('.popup__type').textContent = charactersCard[index].offer.type;
+  cardOneElement.querySelector('.popup__text--capacity').textContent = charactersCard[index].offer.rooms + 'комнаты для ' + charactersCard[index].offer.rooms + 'гостей';
+  cardOneElement.querySelector('.popup__text--time').textContent = 'Заезд до ' + charactersCard[index].offer.checkin + ', выезд после ' + charactersCard[index].offer.checkout;
   cardOneElement.querySelector('.popup__features').textContent = '';
-  cardOneElement.querySelector('.popup__features').appendChild(getFeatures(charactersCard.offer.features));
-  cardOneElement.querySelector('.popup__description').textContent = charactersCard.offer.description;
+  cardOneElement.querySelector('.popup__features').appendChild(getFeatures(charactersCard[index].offer.features));
+  cardOneElement.querySelector('.popup__description').textContent = charactersCard[index].offer.description;
   cardOneElement.querySelector('.popup__photos').textContent = '';
-  cardOneElement.querySelector('.popup__photos').appendChild(getPhotos(charactersCard.offer.photos));
+  cardOneElement.querySelector('.popup__photos').appendChild(getPhotos(charactersCard[index].offer.photos));
   return cardOneElement;
 };
 
-var getCardFragment = function () {
-  var cardFragment = document.createDocumentFragment();
-  cardFragment.appendChild(getCard(adverts[2]));
-  document.querySelector('.map').insertBefore(cardFragment, document.querySelector('.map__filter-container'));
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
+var mapUser = document.querySelector('.map');
+var bigPin = document.querySelector('.map__pin--main');
+var form = document.querySelector('.ad-form');
+var fieldsets = document.querySelectorAll('fieldset');
+var address = document.querySelector('#address');
+
+// Активируем карту
+
+var disabledForm = function () {
+  form.classList.add('ad-form--disabled');
+  fieldsets.forEach(function (item) {
+    item.setAttribute('disabled', 'disabled');
+  });
 };
 
-getCardFragment();
+disabledForm();
+
+var activeForm = function (arr) {
+  form.classList.remove('ad-form--disabled');
+  fieldsets.forEach(function (item) {
+    item.removeAttribute('disabled');
+  });
+  address.value = arr[2].offer.address;
+};
+
+
+// Соберём все нужные компоненты активации
+var activePage = function () {
+  mapUser.classList.remove('map--faded');
+  getPinFragment(adverts);
+  activeForm(adverts);
+};
+
+bigPin.addEventListener('mouseup', function () {
+  activePage();
+});
+
+// Отрисуем карточки по клику и закрытие
+
+var openCard = function (advertsArr, index) {
+  var cardOneFragment = document.createDocumentFragment();
+  cardOneFragment.appendChild(getCard(advertsArr, index));
+  mapUser.insertBefore(cardOneFragment, document.querySelector('.map__filters-container'));
+};
+
+var closeCard = function () {
+  var popupClose = document.querySelector('.map__card');
+  if (!(popupClose === null)) {
+    mapUser.removeChild(popupClose);
+  }
+};
+
+var activeCard = function () {
+  var exitPin = pinElements.querySelectorAll('.map__pin:not(.map__pin--main)');
+  for (var i = 0; i < exitPin.length; i++) {
+    exitPin[i].addEventListener('click', function (evt) {
+      closeCard();
+      openCard(adverts, evt.currentTarget.dataset.order);
+      var popupCloseBtn = document.querySelector('.popup__close');
+      popupCloseBtn.addEventListener('click', function () {
+        closeCard();
+      });
+    });
+  }
+};
+
+pinElements.addEventListener('click', activeCard);
+
+document.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeCard();
+  }
+});
+
+// Открытие по клавише
+document.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    activeCard();
+  }
+});

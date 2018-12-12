@@ -231,3 +231,56 @@ document.addEventListener('keydown', function (evt) {
     activeCard();
   }
 });
+
+
+// Валидация формы
+var typeHouse = document.querySelector('#type');
+var priceHouse = document.querySelector('#price');
+var guest = document.querySelector('#capacity');
+var options = guest.querySelectorAll('option');
+var rooms = document.querySelector('#room_number');
+
+var typesHouses = {
+  'bungalo': {
+    MIN_VALUE: '0',
+    PLACEHOLDER: '0',
+  },
+  'flat': {
+    MIN_VALUE: '1000',
+    PLACEHOLDER: '1000',
+  },
+  'house': {
+    MIN_VALUE: '5000',
+    PLACEHOLDER: '5000',
+  },
+  'palace': {
+    MIN_VALUE: '10000',
+    PLACEHOLDER: '10000'
+  }
+};
+
+var roomsMap = {
+  '1': ['1'],
+  '2': ['1', '2'],
+  '3': ['1', '2', '3'],
+  '100': ['0']
+};
+
+// Устанавливаем зависимость квартира - цена
+var getMinPrice = function () {
+  priceHouse.min = typesHouses[typeHouse.value].MIN_VALUE;
+  priceHouse.placeholder = typesHouses[typeHouse.value].PLACEHOLDER;
+};
+
+typeHouse.addEventListener('input', getMinPrice);
+
+// Устанавливаем зависимость гость - комната
+
+var getRooms = function () {
+  options.forEach(function (option) {
+    option.disabled = !roomsMap[rooms.value].includes(option.value);
+  });
+  guest.value = roomsMap[rooms.value].includes(guest.value) ? guest.value : roomsMap[rooms.value][0];
+};
+
+rooms.addEventListener('input', getRooms);

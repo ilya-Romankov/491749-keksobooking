@@ -235,10 +235,11 @@ document.addEventListener('keydown', function (evt) {
 
 // Валидация формы
 var typeHouse = document.querySelector('#type');
-var priceHouse = document.querySelector('#price');
 var guest = document.querySelector('#capacity');
 var options = guest.querySelectorAll('option');
 var rooms = document.querySelector('#room_number');
+var timeIn = document.querySelector('#timein');
+var timeOut = document.querySelector('#timeout');
 
 var typesHouses = {
   'bungalo': {
@@ -268,6 +269,7 @@ var roomsMap = {
 
 // Устанавливаем зависимость квартира - цена
 var getMinPrice = function () {
+  var priceHouse = document.querySelector('#price');
   priceHouse.min = typesHouses[typeHouse.value].MIN_VALUE;
   priceHouse.placeholder = typesHouses[typeHouse.value].PLACEHOLDER;
 };
@@ -284,3 +286,19 @@ var getRooms = function () {
 };
 
 rooms.addEventListener('input', getRooms);
+
+// Установим зависимость заезд - выезд
+var getTimesIn = function () {
+  if (timeOut.value !== timeIn.value) {
+    timeOut.value = timeIn.value;
+  }
+};
+
+var getTimesOut = function () {
+  if (timeIn.value !== timeOut.value) {
+    timeIn.value = timeOut.value;
+  }
+};
+
+timeIn.addEventListener('input', getTimesIn);
+timeOut.addEventListener('input', getTimesOut);

@@ -168,12 +168,11 @@ var disabledForm = function () {
 
 disabledForm();
 
-var activateForm = function (arr) {
+var activateForm = function () {
   form.classList.remove('ad-form--disabled');
   fieldsets.forEach(function (item) {
     item.removeAttribute('disabled');
   });
-  address.value = arr[2].offer.address;
 };
 
 
@@ -181,7 +180,7 @@ var activateForm = function (arr) {
 var activatePage = function () {
   mapUser.classList.remove('map--faded');
   getPinFragment(adverts);
-  activateForm(adverts);
+  activateForm();
 };
 
 bigPin.addEventListener('mouseup', function () {
@@ -325,4 +324,64 @@ var checkedInput = function () {
 
 submitForm.addEventListener('click', function () {
   checkedInput();
+});
+
+
+// Drag
+bigPin.addEventListener('mousedown', function (evt) {
+  evt.preventDefault();
+
+  var startCoords = {
+    x: evt.clientX,
+    y: evt.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+
+    var maxY = 630;
+    var minY = 130;
+    var maxX = mapUser.offsetWidth - bigPin.offsetWidth; // Такое число, чтоб пин не вынести за пределы
+    var minX = 0;
+
+
+    var top = bigPin.offsetTop - shift.y;
+    var left = bigPin.offsetLeft - shift.x;
+
+    if (top >= maxY) {
+      top = maxY;
+    } else if (top <= minY) {
+      top = minY;
+    }
+
+    if (left >= maxX) {
+      left = maxX;
+    } else if (left <= minX) {
+      left = minX;
+    }
+
+    bigPin.style.top = top + 'px';
+    bigPin.style.left = left + 'px';
+
+    address.value = bigPin.offsetTop + ',' + bigPin.offsetLeft;
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    mapUser.removeEventListener('mousemove', onMouseMove);
+    mapUser.removeEventListener('mouseup', onMouseUp);
+  };
+
+  mapUser.addEventListener('mousemove', onMouseMove);
+  mapUser.addEventListener('mouseup', onMouseUp);
 });

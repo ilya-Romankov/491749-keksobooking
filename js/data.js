@@ -10,41 +10,53 @@
   var LOCATION_MAX_X = 900;
   var LOCATION_MAX_Y = 630;
 
-  window.data = {
-    generateAdvert: function (advertsCount) {
-      var adverts = [];
+  var getAvatarUser = window.util.getAvatarUser;
+  var getRandomNumber = window.util.getRandomNumber;
+  var getRandomIndexElement = window.util.getRandomIndexElement;
+  var getRandomLength = window.util.getRandomLength;
+  var types = window.util.types;
+  var checkinsCheckouts = window.util.checkinsCheckouts;
+  var features = window.util.features;
+  var pathsPhotos = window.util.pathsPhotos;
+  var titles = window.util.titles;
 
-      for (var i = 0; i < advertsCount; i++) {
-        var x = window.util.getRandomNumber(LOCATION_MIN_X, LOCATION_MAX_X);
-        var y = window.util.getRandomNumber(LOCATION_MIN_Y, LOCATION_MAX_Y);
+  var generateAdvert = function (advertsCount) {
+    var adverts = [];
 
-        var oneAdvert = {
-          author: {
-            avatar: window.util.getAvatarUser(i)
-          },
+    for (var i = 0; i < advertsCount; i++) {
+      var x = getRandomNumber(LOCATION_MIN_X, LOCATION_MAX_X);
+      var y = getRandomNumber(LOCATION_MIN_Y, LOCATION_MAX_Y);
 
-          offer: {
-            title: window.util.titles[i],
-            address: x + ', ' + y,
-            price: window.util.getRandomNumber(MIN_PRICE, MAX_PRICE),
-            type: window.util.getRandomIndexElement(window.util.types),
-            rooms: window.util.getRandomNumber(MIN_ROOMS, MAX_ROOMS),
-            checkin: window.util.getRandomIndexElement(window.util.checkinsCheckouts),
-            checkout: window.util.getRandomIndexElement(window.util.checkinsCheckouts),
-            features: window.util.getRandomLength(window.util.features),
-            description: '',
-            photos: window.util.pathsPhotos
-          },
+      var oneAdvert = {
+        author: {
+          avatar: getAvatarUser(i)
+        },
 
-          location: {
-            x: x,
-            y: y
-          },
-          order: i
-        };
-        adverts.push(oneAdvert);
-      }
-      return adverts;
+        offer: {
+          title: titles[i],
+          address: x + ', ' + y,
+          price: getRandomNumber(MIN_PRICE, MAX_PRICE),
+          type: getRandomIndexElement(types),
+          rooms: getRandomNumber(MIN_ROOMS, MAX_ROOMS),
+          checkin: getRandomIndexElement(checkinsCheckouts),
+          checkout: getRandomIndexElement(checkinsCheckouts),
+          features: getRandomLength(features),
+          description: '',
+          photos: pathsPhotos
+        },
+
+        location: {
+          x: x,
+          y: y
+        },
+        order: i
+      };
+      adverts.push(oneAdvert);
     }
+    return adverts;
+  };
+
+  window.data = {
+    generateAdvert: generateAdvert
   };
 })();

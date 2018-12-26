@@ -2,11 +2,8 @@
 
 (function () {
   var ADVERTISING_COUNT = 8;
-
   var adverts = window.data.generateAdvert(ADVERTISING_COUNT);
-
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
-
   var pinElements = document.querySelector('.map__pins');
 
   var getPin = function (charactersPin) {
@@ -20,7 +17,7 @@
   var getPinFragment = function (advertes) {
     var pinFragment = document.createDocumentFragment();
     for (var i = 0; i < advertes.length; i++) {
-      pinFragment.appendChild(window.pin.getPin(advertes[i]));
+      pinFragment.appendChild(getPin(advertes[i]));
     }
     pinElements.appendChild(pinFragment);
   };

@@ -9,7 +9,10 @@
   var form = document.querySelector('.ad-form');
   var fieldsets = document.querySelectorAll('fieldset');
   var address = document.querySelector('#address');
-
+  var getPinFragment = window.pin.getPinFragment;
+  var adverts = window.pin.adverts;
+  var getCardFragment = window.card.getCardFragment;
+  var pinElements = window.pin.pinElements;
   // Активируем карту
 
   var disabledForm = function () {
@@ -32,7 +35,7 @@
   // Соберём все нужные компоненты активации
   var activatePage = function () {
     mapUser.classList.remove('map--faded');
-    window.pin.getPinFragment(window.pin.adverts);
+    getPinFragment(adverts);
     activateForm();
   };
 
@@ -44,7 +47,7 @@
 
   var openCard = function (advertsArr, index) {
     var cardOneFragment = document.createDocumentFragment();
-    cardOneFragment.appendChild(window.card.getCardFragment(advertsArr, index));
+    cardOneFragment.appendChild(getCardFragment(advertsArr, index));
     mapUser.insertBefore(cardOneFragment, document.querySelector('.map__filters-container'));
   };
 
@@ -56,11 +59,11 @@
   };
 
   var activatePins = function () {
-    var exitPin = window.pin.pinElements.querySelectorAll('.map__pin:not(.map__pin--main)');
+    var exitPin = pinElements.querySelectorAll('.map__pin:not(.map__pin--main)');
     for (var i = 0; i < exitPin.length; i++) {
       exitPin[i].addEventListener('click', function (evt) {
         closeCard();
-        openCard(window.pin.adverts, evt.currentTarget.dataset.order);
+        openCard(adverts, evt.currentTarget.dataset.order);
         var popupCloseBtn = document.querySelector('.popup__close');
         popupCloseBtn.addEventListener('click', function () {
           closeCard();
@@ -69,7 +72,7 @@
     }
   };
 
-  window.pin.pinElements.addEventListener('click', activatePins);
+  pinElements.addEventListener('click', activatePins);
 
   document.addEventListener('keydown', function (evt) {
     if (evt.keyCode === ESC_KEYCODE) {

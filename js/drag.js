@@ -5,8 +5,11 @@
   var minY = 130;
   var maxX = window.map.mapUser.offsetWidth - window.map.bigPin.offsetWidth; // Такое число, чтоб пин не вынести за пределы
   var minX = 0;
+  var bigPin = window.map.bigPin;
+  var address = window.map.address;
+  var mapUser = window.map.mapUser;
 
-  window.map.bigPin.addEventListener('mousedown', function (evt) {
+  bigPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
     var startCoords = {
@@ -26,8 +29,8 @@
         y: moveEvt.clientY
       };
 
-      var top = window.map.bigPin.offsetTop - shift.y;
-      var left = window.map.bigPin.offsetLeft - shift.x;
+      var top = bigPin.offsetTop - shift.y;
+      var left = bigPin.offsetLeft - shift.x;
 
       if (top >= maxY) {
         top = maxY;
@@ -41,19 +44,19 @@
         left = minX;
       }
 
-      window.map.bigPin.style.top = top + 'px';
-      window.map.bigPin.style.left = left + 'px';
+      bigPin.style.top = top + 'px';
+      bigPin.style.left = left + 'px';
 
-      window.map.address.value = window.map.bigPin.offsetTop + ',' + window.map.bigPin.offsetLeft;
+      address.value = bigPin.offsetTop + ',' + bigPin.offsetLeft;
     };
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      window.map.mapUser.removeEventListener('mousemove', onMouseMove);
-      window.map.mapUser.removeEventListener('mouseup', onMouseUp);
+      mapUser.removeEventListener('mousemove', onMouseMove);
+      mapUser.removeEventListener('mouseup', onMouseUp);
     };
 
-    window.map.mapUser.addEventListener('mousemove', onMouseMove);
-    window.map.mapUser.addEventListener('mouseup', onMouseUp);
+    mapUser.addEventListener('mousemove', onMouseMove);
+    mapUser.addEventListener('mouseup', onMouseUp);
   });
 })();

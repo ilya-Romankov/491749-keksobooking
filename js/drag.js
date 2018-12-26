@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  var maxY = 630;
+  var minY = 130;
+  var maxX = window.map.mapUser.offsetWidth - window.map.bigPin.offsetWidth; // Такое число, чтоб пин не вынести за пределы
+  var minX = 0;
+
   window.map.bigPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
 
@@ -20,13 +25,6 @@
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
-
-
-      var maxY = 630;
-      var minY = 130;
-      var maxX = window.map.mapUser.offsetWidth - window.map.bigPin.offsetWidth; // Такое число, чтоб пин не вынести за пределы
-      var minX = 0;
-
 
       var top = window.map.bigPin.offsetTop - shift.y;
       var left = window.map.bigPin.offsetLeft - shift.x;

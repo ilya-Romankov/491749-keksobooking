@@ -13,6 +13,8 @@
   var adverts = window.pin.adverts;
   var getCardFragment = window.card.getCardFragment;
   var pinElements = window.pin.pinElements;
+  var load = window.backend.load;
+  var errorHandler = window.backend.errorHandler;
   // Активируем карту
 
   var disabledForm = function () {
@@ -35,7 +37,7 @@
   // Соберём все нужные компоненты активации
   var activatePage = function () {
     mapUser.classList.remove('map--faded');
-    getPinFragment(adverts);
+    load(getPinFragment, errorHandler);
     activateForm();
   };
 
@@ -58,12 +60,12 @@
     }
   };
 
-  var activatePins = function () {
+  var activatePins = function (arr) {
     var exitPin = pinElements.querySelectorAll('.map__pin:not(.map__pin--main)');
     for (var i = 0; i < exitPin.length; i++) {
       exitPin[i].addEventListener('click', function (evt) {
         closeCard();
-        openCard(adverts, evt.currentTarget.dataset.order);
+        openCard(arr , evt.currentTarget.dataset.order, errorHandler);
         var popupCloseBtn = document.querySelector('.popup__close');
         popupCloseBtn.addEventListener('click', function () {
           closeCard();
@@ -72,7 +74,10 @@
     }
   };
 
-  pinElements.addEventListener('click', activatePins);
+
+  pinElements.addEventListener('click', function() {
+    load(activatePins, errorHandler)
+  });
 
   document.addEventListener('keydown', function (evt) {
     if (evt.keyCode === ESC_KEYCODE) {
@@ -89,6 +94,7 @@
   window.map = {
     bigPin: bigPin,
     mapUser: mapUser,
-    address: address
+    address: address,
+    form: form
   };
 })();

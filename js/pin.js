@@ -6,18 +6,18 @@
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var pinElements = document.querySelector('.map__pins');
 
-  var getPin = function (charactersPin) {
+  var getPin = function (charactersPin, index) {
     var pinOneElement = pinTemplate.cloneNode(true);
     pinOneElement.style = 'left:' + charactersPin.location.x + 'px;' + 'top:' + charactersPin.location.y + 'px;';
     pinOneElement.querySelector('img').src = charactersPin.author.avatar;
     pinOneElement.querySelector('img').alt = charactersPin.offer.title;
-    pinOneElement.setAttribute('data-order', charactersPin.order);
+    pinOneElement.setAttribute('data-order', index);
     return pinOneElement;
   };
   var getPinFragment = function (advertes) {
     var pinFragment = document.createDocumentFragment();
     for (var i = 0; i < advertes.length; i++) {
-      pinFragment.appendChild(getPin(advertes[i]));
+      pinFragment.appendChild(getPin(advertes[i], i));
     }
     pinElements.appendChild(pinFragment);
   };

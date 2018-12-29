@@ -11,6 +11,9 @@
   var timeOut = document.querySelector('#timeout');
   var submitForm = document.querySelector('.ad-form__submit');
   var checkValidInputs = [mainTitle, priceHouseIn];
+  var mainForm = document.querySelector('.ad-form');
+  var upload = window.backend.upload;
+  var mapUser = document.querySelector('.map');
 
   var typesHouses = {
     'bungalo': {
@@ -89,5 +92,30 @@
 
   submitForm.addEventListener('click', function () {
     checkedInput();
+  });
+
+  var closeSucces = function() {
+    var success =  document.querySelector('.success');
+    mapUser.removeChild(success);
+  };
+
+  var getSucces = function() {
+    var success = document.createDocumentFragment();
+    var successTemplate = document.querySelector('#success').content.querySelector('.success');
+    var successElement = successTemplate.cloneNode(true);
+    success.appendChild(successElement);
+    mapUser.insertBefore(success, document.querySelector('.map__filters-container'));
+
+    setTimeout(function() {
+      closeSucces();
+    }, 2000);
+  };
+
+  mainForm.addEventListener('submit', function(evt) {
+    upload(new FormData(mainForm), function() {
+      getSucces();
+      mainForm.reset();
+    });
+    evt.preventDefault();
   });
 })();

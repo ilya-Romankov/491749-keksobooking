@@ -20,6 +20,7 @@
   var pathsPhotos = window.util.pathsPhotos;
   var titles = window.util.titles;
 
+
   var generateAdvert = function (advertsCount) {
     var adverts = [];
 

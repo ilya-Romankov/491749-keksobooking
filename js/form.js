@@ -94,27 +94,57 @@
     checkedInput();
   });
 
-  var closeSucces = function() {
-    var success =  document.querySelector('.success');
+  // Отрисовываем сообщение об усрешности
+
+  // Успешный блок
+  var closeSucces = function () {
+    var success = document.querySelector('.success');
     mapUser.removeChild(success);
   };
 
-  var getSucces = function() {
+  var getSucces = function () {
     var success = document.createDocumentFragment();
     var successTemplate = document.querySelector('#success').content.querySelector('.success');
     var successElement = successTemplate.cloneNode(true);
     success.appendChild(successElement);
     mapUser.insertBefore(success, document.querySelector('.map__filters-container'));
 
-    setTimeout(function() {
+    setTimeout(function () {
       closeSucces();
-    }, 2000);
+    }, 2500);
   };
 
-  mainForm.addEventListener('submit', function(evt) {
-    upload(new FormData(mainForm), function() {
-      getSucces();
-      mainForm.reset();
+  // Неуспешный блок
+  var closeError = function () {
+    var error = document.querySelector('.error');
+    if (!(error === null)) {
+      mapUser.removeChild(error);
+    }
+  };
+
+  var getError = function () {
+    var error = document.createDocumentFragment();
+    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+    var errorElement = errorTemplate.cloneNode(true);
+    error.appendChild(errorElement);
+    mapUser.insertBefore(error, document.querySelector('.map__filters-container'));
+
+    var closeBtn = document.querySelector('.error__button');
+    closeBtn.addEventListener('click', function () {
+      closeError();
+    });
+  };
+
+
+  // Проверим статус и вызовем один из блоков
+  mainForm.addEventListener('submit', function (evt) {
+    upload(new FormData(mainForm), function (status) {
+      if (status === 200) {
+        getSucces();
+        mainForm.reset();
+      } else {
+        getError();
+      }
     });
     evt.preventDefault();
   });

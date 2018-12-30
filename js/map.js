@@ -10,7 +10,7 @@
   var fieldsets = document.querySelectorAll('fieldset');
   var address = document.querySelector('#address');
   var getPinFragment = window.pin.getPinFragment;
-  var adverts = window.pin.adverts;
+  // var adverts = window.pin.adverts;
   var getCardFragment = window.card.getCardFragment;
   var pinElements = window.pin.pinElements;
   var load = window.backend.load;
@@ -65,7 +65,7 @@
     for (var i = 0; i < exitPin.length; i++) {
       exitPin[i].addEventListener('click', function (evt) {
         closeCard();
-        openCard(arr , evt.currentTarget.dataset.order, errorHandler);
+        openCard(arr, evt.currentTarget.dataset.order, errorHandler);
         var popupCloseBtn = document.querySelector('.popup__close');
         popupCloseBtn.addEventListener('click', function () {
           closeCard();
@@ -75,8 +75,8 @@
   };
 
 
-  pinElements.addEventListener('click', function() {
-    load(activatePins, errorHandler)
+  pinElements.addEventListener('click', function () {
+    load(activatePins, errorHandler);
   });
 
   document.addEventListener('keydown', function (evt) {

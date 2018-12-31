@@ -12,7 +12,8 @@
   var submitForm = document.querySelector('.ad-form__submit');
   var checkValidInputs = [mainTitle, priceHouseIn];
   var mainForm = document.querySelector('.ad-form');
-  var upload = window.backend.upload;
+  var save = window.backend.save;
+  var errorHandler = window.backend.errorHandler;
   var mapUser = document.querySelector('.map');
 
   var typesHouses = {
@@ -138,14 +139,14 @@
 
   // Проверим статус и вызовем один из блоков
   mainForm.addEventListener('submit', function (evt) {
-    upload(new FormData(mainForm), function (status) {
-      if (status === 200) {
+    save(new FormData(mainForm), function (xhr) {
+      if (xhr.status === 200) {
         getSucces();
         mainForm.reset();
       } else {
         getError();
       }
-    });
+    }, errorHandler);
     evt.preventDefault();
   });
 })();

@@ -139,14 +139,7 @@
 
   // Проверим статус и вызовем один из блоков
   mainForm.addEventListener('submit', function (evt) {
-    save(new FormData(mainForm), function (xhr) {
-      if (xhr.status === 200) {
-        getSucces();
-        mainForm.reset();
-      } else {
-        getError();
-      }
-    }, errorHandler);
     evt.preventDefault();
+    save(new FormData(mainForm),getSucces,getError);
   });
 })();

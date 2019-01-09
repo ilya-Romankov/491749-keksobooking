@@ -2,6 +2,13 @@
 
 (function () {
 
+  var translateHouseType = {
+    flat: 'Квартира',
+    bungalo: 'Бунгало',
+    house: 'Дом',
+    palace: 'Дворец'
+  };
+
   var getPhotos = function (photosArr) {
     var photosFragment = document.createDocumentFragment();
     for (var i = 0; i < photosArr.length; i++) {
@@ -33,7 +40,7 @@
     cardElement.querySelector('.popup__title').textContent = charactersCard[index].offer.title;
     cardElement.querySelector('.popup__text--address').textContent = charactersCard[index].offer.address;
     cardElement.querySelector('.popup__text--price').textContent = charactersCard[index].offer.price + '$  /ночь';
-    cardElement.querySelector('.popup__type').textContent = charactersCard[index].offer.type;
+    cardElement.querySelector('.popup__type').textContent = translateHouseType[charactersCard[index].offer.type];
     cardElement.querySelector('.popup__text--capacity').textContent = charactersCard[index].offer.rooms + 'комнаты для ' + charactersCard[index].offer.rooms + 'гостей';
     cardElement.querySelector('.popup__text--time').textContent = 'Заезд до ' + charactersCard[index].offer.checkin + ', выезд после ' + charactersCard[index].offer.checkout;
     cardElement.querySelector('.popup__features').textContent = '';
@@ -43,6 +50,7 @@
     cardElement.querySelector('.popup__photos').appendChild(getPhotos(charactersCard[index].offer.photos));
     return cardElement;
   };
+
 
   window.card = {
     getPhotos: getPhotos,

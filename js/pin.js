@@ -22,10 +22,19 @@
     pinElements.appendChild(pinFragment);
   };
 
+
+  var resetPins = function () {
+    var existingPinElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0; i < existingPinElements.length; i++) {
+      pinElements.removeChild(existingPinElements[i]);
+    }
+  };
+
   window.pin = {
     getPin: getPin,
     getPinFragment: getPinFragment,
     adverts: adverts,
-    pinElements: pinElements
+    pinElements: pinElements,
+    resetPins: resetPins,
   };
 })();

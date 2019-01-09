@@ -13,7 +13,6 @@
   var checkValidInputs = [mainTitle, priceHouseIn];
   var mainForm = document.querySelector('.ad-form');
   var save = window.backend.save;
-  var errorHandler = window.backend.errorHandler;
   var mapUser = document.querySelector('.map');
 
   var typesHouses = {
@@ -140,6 +139,6 @@
   // Проверим статус и вызовем один из блоков
   mainForm.addEventListener('submit', function (evt) {
     evt.preventDefault();
-    save(new FormData(mainForm),getSucces,getError);
+    save(new FormData(mainForm), getSucces, getError);
   });
 })();

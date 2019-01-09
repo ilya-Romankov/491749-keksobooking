@@ -17,6 +17,8 @@
       y: evt.clientY
     };
 
+    address.value = bigPin.offsetTop + ',' + bigPin.offsetLeft;
+
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
       var shift = {
@@ -43,6 +45,7 @@
       } else if (left <= minX) {
         left = minX;
       }
+
 
       bigPin.style.top = top + 'px';
       bigPin.style.left = left + 'px';

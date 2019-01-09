@@ -10,11 +10,15 @@
   var fieldsets = document.querySelectorAll('fieldset');
   var address = document.querySelector('#address');
   var getPinFragment = window.pin.getPinFragment;
-  // var adverts = window.pin.adverts;
   var getCardFragment = window.card.getCardFragment;
   var pinElements = window.pin.pinElements;
   var load = window.backend.load;
   var errorHandler = window.backend.errorHandler;
+  var filters = document.querySelector('.map__filters');
+  var resetForm = document.querySelector('.ad-form__reset');
+  var resetPins = window.pin.resetPins;
+  var debounce = window.util.debounce;
+  var updatePins = window.filter.updatePins;
   // Активируем карту
 
   var disabledForm = function () {
@@ -91,6 +95,32 @@
       activatePins();
     }
   });
+
+
+  // Деактивация страницы
+
+  var getResetForm = function () {
+    mapUser.classList.add('map--faded');
+    form.reset();
+    resetPins();
+    disabledForm();
+    closeCard();
+    filters.reset();
+  };
+
+  resetForm.addEventListener('click', getResetForm);
+
+  // Фильтр
+
+  var onFilterChange = function (evt) {
+    evt.preventDefault();
+    closeCard();
+    resetPins();
+    debounce(updatePins(window.advertsData));
+  };
+
+  filters.addEventListener('change', onFilterChange);
+
   window.map = {
     bigPin: bigPin,
     mapUser: mapUser,

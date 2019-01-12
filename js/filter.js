@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-  var FILTER_PRICE_MIN = 10000;
-  var FILTER_PRICE_MAX = 50000;
+
+  var constants = window.constants;
   var filters = document.querySelector('.map__filters');
 
   var updatePins = function (adverts) {
@@ -28,9 +28,9 @@
     var filterByPrice = function (filterPrice) {
       return selectedPins.filter(function (newData) {
         var filterPriceValues = {
-          'low': newData.offer.price <= FILTER_PRICE_MIN,
-          'middle': newData.offer.price >= FILTER_PRICE_MIN && newData.offer.price <= FILTER_PRICE_MAX,
-          'high': newData.offer.price >= FILTER_PRICE_MAX
+          'low': newData.offer.price <= constants.FILTER_PRICE_MIN,
+          'middle': newData.offer.price >= constants.FILTER_PRICE_MIN && newData.offer.price <= constants.FILTER_PRICE_MAX,
+          'high': newData.offer.price >= constants.FILTER_PRICE_MAX
         };
         return filterPriceValues[filterPrice.value];
       });
@@ -62,7 +62,7 @@
     }
 
     if (selectedPins.length) {
-      window.pin.getPinFragment(selectedPins);
+      window.map.renderPinFragment(selectedPins);
     }
   };
 

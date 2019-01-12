@@ -1,19 +1,19 @@
 'use strict';
 
+// загрузка похожих объявлений с сервера
 (function () {
-
   var URL = 'https://js.dump.academy/keksobooking';
 
+  // обработка ошибок
   var setup = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
-
     xhr.addEventListener('load', function () {
       if (xhr.status === 200) {
         onLoad(xhr.response);
         window.advertsData = xhr.response;
       } else {
-        onError(xhr.response);
+        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
     xhr.addEventListener('error', function () {
@@ -22,39 +22,43 @@
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-
-    xhr.timeout = 10000;
+    xhr.timeout = 100000;
     return xhr;
   };
 
-  function load(onLoad, onError) {
+  // загрузка данных с сервера
+  var load = function (onLoad, onError) {
     var xhr = setup(onLoad, onError);
     xhr.open('GET', URL + '/data');
     xhr.send();
-  }
+  };
 
-  function save(data, onLoad, onError) {
+  // отправка данных на сервер
+  var save = function (data, onLoad, onError) {
     var xhr = setup(onLoad, onError);
     xhr.open('POST', URL);
     xhr.send(data);
-  }
-
-  var errorHandler = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '30px';
-
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
   };
 
+  // элемент с текстом ошибки
+  var onLoadError = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 3; width: 100%; height: 100%; padding-top: 300px; text-align: center; background-color: rgba(0, 0, 0, 0.8)';
+    node.style.position = 'fixed';
+    node.style.left = '0';
+    node.style.top = '0';
+    node.style.fontSize = '50px';
+    node.style.color = '#ffffff';
+    node.style.fontWeight = '700';
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+    return node;
+  };
 
   window.backend = {
     load: load,
     save: save,
-    errorHandler: errorHandler
+    onLoadError: onLoadError
   };
+
 })();

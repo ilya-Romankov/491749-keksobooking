@@ -1,144 +1,181 @@
 'use strict';
 
 (function () {
-  var mainTitle = document.querySelector('#title');
-  var priceHouseIn = document.querySelector('#price');
-  var typeHouse = document.querySelector('#type');
-  var guest = document.querySelector('#capacity');
-  var options = guest.querySelectorAll('option');
-  var rooms = document.querySelector('#room_number');
-  var timeIn = document.querySelector('#timein');
-  var timeOut = document.querySelector('#timeout');
-  var submitForm = document.querySelector('.ad-form__submit');
-  var checkValidInputs = [mainTitle, priceHouseIn];
-  var mainForm = document.querySelector('.ad-form');
-  var save = window.backend.save;
-  var mapUser = document.querySelector('.map');
 
-  var typesHouses = {
+  // валидация формы
+  var form = document.querySelector('.ad-form');
+  var title = form.querySelector('#title');
+  var houseType = form.querySelector('#type');
+  var price = form.querySelector('#price');
+  var arrivalTime = form.querySelector('#timein');
+  var departureTime = form.querySelector('#timeout');
+  var roomQuantity = form.querySelector('#room_number');
+  var guestsQuantity = form.querySelector('#capacity');
+  var description = form.querySelector('#description');
+  var submitButton = form.querySelector('.ad-form__submit');
+  var resetButton = form.querySelector('.ad-form__reset');
+  var options = guestsQuantity.querySelectorAll('option');
+  var mainPin = document.querySelector('.map__pin--main');
+  var inputsValid = [price, title];
+  var successMessage = document.querySelector('.success');
+  var userMap = document.querySelector('.map');
+  var fieldsets = form.querySelectorAll('fieldset');
+
+  var houseTypeMap = {
     'bungalo': {
       MIN_VALUE: '0',
       PLACEHOLDER: '0',
     },
     'flat': {
       MIN_VALUE: '1000',
-      PLACEHOLDER: '1000',
+      PLACEHOLDER: '1 000',
     },
     'house': {
       MIN_VALUE: '5000',
-      PLACEHOLDER: '5000',
+      PLACEHOLDER: '5 000',
     },
     'palace': {
       MIN_VALUE: '10000',
-      PLACEHOLDER: '10000'
+      PLACEHOLDER: '10 000'
     }
   };
 
-  var roomsMap = {
+  var roomQuantityMap = {
     '1': ['1'],
     '2': ['1', '2'],
     '3': ['1', '2', '3'],
     '100': ['0']
   };
 
-  // Устанавливаем зависимость квартира - цена
-  var getMinPrice = function () {
-    var priceHouse = document.querySelector('#price');
-    priceHouse.min = typesHouses[typeHouse.value].MIN_VALUE;
-    priceHouse.placeholder = typesHouses[typeHouse.value].PLACEHOLDER;
+  // соответсвие значения поля цены полю жилья
+  var onMinPrice = function () {
+    price.min = houseTypeMap[houseType.value].MIN_VALUE;
+    price.placeholder = houseTypeMap[houseType.value].PLACEHOLDER;
   };
 
-  typeHouse.addEventListener('input', getMinPrice);
+  // соответсвие значения поля времени приезда полю времени отъезда
+  var setTime = function (element, value) {
+    element.value = value;
+  };
 
-  // Устанавливаем зависимость гость - комната
-
-  var getRooms = function () {
-    options.forEach(function (option) {
-      option.disabled = !roomsMap[rooms.value].includes(option.value);
+  // соответсвие значения поля количества гостей полю количества комнат
+  var onCapacityChange = function () {
+    options.forEach(function (element) {
+      element.disabled = !roomQuantityMap[roomQuantity.value].includes(element.value);
     });
-    guest.value = roomsMap[rooms.value].includes(guest.value) ? guest.value : roomsMap[rooms.value][0];
+    guestsQuantity.value = roomQuantityMap[roomQuantity.value].includes(guestsQuantity.value) ? guestsQuantity.value : roomQuantityMap[roomQuantity.value][0];
   };
 
-  rooms.addEventListener('input', getRooms);
-
-  // Установим зависимость заезд - выезд
-  var getTimesIn = function () {
-    if (timeOut.value !== timeIn.value) {
-      timeOut.value = timeIn.value;
-    }
-  };
-
-  var getTimesOut = function () {
-    if (timeIn.value !== timeOut.value) {
-      timeIn.value = timeOut.value;
-    }
-  };
-
-  timeIn.addEventListener('input', getTimesIn);
-  timeOut.addEventListener('input', getTimesOut);
-
-  var checkedInput = function () {
-    for (var i = 0; i < checkValidInputs.length; i++) {
-      var valid = checkValidInputs[i].validity.valid;
-      if (!valid) {
-        checkValidInputs[i].classList.add('invalid');
-        checkValidInputs[i].style.border = '1px solid red';
+  // проверка на валидность поля
+  var validityInput = function () {
+    for (var i = 0; i < inputsValid.length; i++) {
+      var validity = inputsValid[i].validity.valid;
+      if (!validity) {
+        inputsValid[i].classList.remove('invalid-field');
+        inputsValid.offsetWidth = inputsValid[i].offsetWidth;
+        inputsValid[i].classList.add('invalid-field');
       } else {
-        checkValidInputs[i].classList.remove('invalid');
-        checkValidInputs[i].style.border = '1px solid #d9d9d3';
+        inputsValid[i].classList.remove('invalid-field');
       }
     }
   };
 
-  submitForm.addEventListener('click', function () {
-    checkedInput();
+  houseType.addEventListener('input', onMinPrice);
+  arrivalTime.addEventListener('input', function (evt) {
+    setTime(departureTime, evt.target.value);
+  });
+  departureTime.addEventListener('input', function (evt) {
+    setTime(arrivalTime, evt.target.value);
+  });
+  roomQuantity.addEventListener('input', onCapacityChange);
+
+  submitButton.addEventListener('click', function () {
+    validityInput();
   });
 
-  // Отрисовываем сообщение об усрешности
+  submitButton.addEventListener('keydown', function (evt) {
+    window.utils.isEnterEvent(evt, validityInput);
+  });
 
-  // Успешный блок
-  var closeSucces = function () {
-    var success = document.querySelector('.success');
-    mapUser.removeChild(success);
+  // показать/скрыть сообщение успешной отправки формы
+  var showSuccessMessage = function () {
+    successMessage.classList.remove('hidden');
+    successMessage.addEventListener('click', closeSuccesMessage);
   };
 
-  var getSucces = function () {
-    var success = document.createDocumentFragment();
-    var successTemplate = document.querySelector('#success').content.querySelector('.success');
-    var successElement = successTemplate.cloneNode(true);
-    success.appendChild(successElement);
-    mapUser.insertBefore(success, document.querySelector('.map__filters-container'));
+  var closeSuccesMessage = function () {
+    successMessage.classList.add('hidden');
+  };
 
+  document.addEventListener('keydown', function (evt) {
+    window.utils.isEscEvent(evt, closeSuccesMessage);
+  });
+
+  // показать/скрыть сообщение об ошибке загрузки
+  var showErrorMessage = function (errorMessage) {
+    var node = window.backend.onLoadError(errorMessage);
+    var onErrorClick = function () {
+      node.remove();
+      document.removeEventListener('click', onErrorClick);
+      document.removeEventListener('keydown', onErrorEscPress);
+    };
+
+    var onErrorEscPress = function (evt) {
+      window.utils.isEscEvent(evt, onErrorClick);
+    };
+
+    document.addEventListener('click', onErrorClick);
+    document.addEventListener('keydown', onErrorEscPress);
+  };
+
+  // сброс формы
+  var resetForm = function () {
     setTimeout(function () {
-      closeSucces();
-    }, 2500);
-  };
-
-  // Неуспешный блок
-  var closeError = function () {
-    var error = document.querySelector('.error');
-    if (!(error === null)) {
-      mapUser.removeChild(error);
+      window.page.fillAddress();
+    });
+    title.value = null;
+    description.value = null;
+    price.placeholder = 0;
+    price.value = null;
+    price.min = 0;
+    guestsQuantity.value = '1';
+    mainPin.style = 'left: 570px; top: 375px';
+    onCapacityChange();
+    for (var i = 0; i < inputsValid.length; i++) {
+      if (inputsValid[i].classList.contains('invalid-field')) {
+        inputsValid[i].classList.remove('invalid-field');
+      }
     }
   };
 
-  var getError = function () {
-    var error = document.createDocumentFragment();
-    var errorTemplate = document.querySelector('#error').content.querySelector('.error');
-    var errorElement = errorTemplate.cloneNode(true);
-    error.appendChild(errorElement);
-    mapUser.insertBefore(error, document.querySelector('.map__filters-container'));
-
-    var closeBtn = document.querySelector('.error__button');
-    closeBtn.addEventListener('click', function () {
-      closeError();
+  var deactivatePage = function () {
+    form.classList.add('ad-form--disabled');
+    userMap.classList.add('map--faded');
+    fieldsets.forEach(function (item) {
+      item.setAttribute('disabled', 'disabled');
     });
+    resetForm();
+    window.card.deleteCard();
+    window.map.resetPins();
+    window.page.loadPage();
   };
 
+  resetButton.addEventListener('click', deactivatePage);
 
-  // Проверим статус и вызовем один из блоков
-  mainForm.addEventListener('submit', function (evt) {
-    evt.preventDefault();
-    save(new FormData(mainForm), getSucces, getError);
+  resetButton.addEventListener('keydown', function (evt) {
+    window.utils.isEnterEvent(evt, deactivatePage);
   });
+
+  form.addEventListener('submit', function (evt) {
+    window.backend.save(new FormData(form), function () {
+      deactivatePage();
+      showSuccessMessage();
+    }, showErrorMessage);
+    evt.preventDefault();
+  });
+
+  window.form = {
+    resetForm: resetForm,
+    showErrorMessage: showErrorMessage
+  };
 })();

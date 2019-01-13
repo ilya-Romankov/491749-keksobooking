@@ -1,69 +1,59 @@
 'use strict';
+// Блок служебных функций
 
 (function () {
-  var constants = window.constants;
+  var Keycode = {
+    ESC: 27,
+    ENTER: 13
+  };
+  var DEBOUNCE_INTERVAL = 500;
 
-  // событие нажатия клавиши ESC
-  var isEscEvent = function (evt, action) {
-    if (evt.keyCode === constants.ESC_KEYCODE) {
+  // Функции нажатия горячих клавиш
+  var isEscKeycode = function (evt, action) {
+    if (evt.keyCode === Keycode.ESC) {
       action();
     }
-    return action;
   };
 
-  // событие нажатия клавиши ENTER
-  var isEnterEvent = function (evt, action) {
-    if (evt.keyCode === constants.ENTER_KEYCODE) {
-      action();
+  var isEnterKeycode = function (evt, action, data) {
+    if (evt.keyCode === Keycode.ENTER) {
+      action(data);
     }
-    return action;
   };
 
-  // рандомный элемент массива
-  var getRandomElement = function (arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
+  // Функция для определения окончания существительных в объявлении
+  var setDeclension = function (number, array) {
+    if ((number % 100 < 20) && (number % 100 >= 5)) {
+      return array[2];
+    }
+    if (number % 10 === 1) {
+      return array[0];
+    } else if ((number % 10 > 1) && (number % 10 < 5)) {
+      return array[1];
+    } else {
+      return array[2];
+    }
   };
 
-  // рандомное число массива
-  var getRandomQuantity = function (min, max) {
-    return Math.floor(min + Math.random() * (max + 1 - min));
-  };
-
-  // перемешать массив
-  var getRandomMixArray = function (arr) {
-    return arr.sort(function () {
-      return Math.random() - 0.5;
-    });
-  };
-
-  // рандомная длина массива
-  var getRandomLength = function (arr) {
-    return arr.slice(getRandomQuantity(0, arr.length - 1));
-  };
-
-  // устранение "дребезга"
+  // Функция для устранения дребезга
   var debounce = function (fun) {
     var lastTimeout = null;
+
     return function () {
       var args = arguments;
       if (lastTimeout) {
-        clearTimeout(lastTimeout);
+        window.clearTimeout(lastTimeout);
       }
-      lastTimeout = setTimeout(function () {
+      lastTimeout = window.setTimeout(function () {
         fun.apply(null, args);
-      }, constants.DEBOUNCE_INTERVAL);
+      }, DEBOUNCE_INTERVAL);
     };
   };
 
-
   window.utils = {
-    isEscEvent: isEscEvent,
-    isEnterEvent: isEnterEvent,
-    getRandomElement: getRandomElement,
-    getRandomQuantity: getRandomQuantity,
-    getRandomMixArray: getRandomMixArray,
-    getRandomLength: getRandomLength,
+    isEscKeycode: isEscKeycode,
+    isEnterKeycode: isEnterKeycode,
+    setDeclension: setDeclension,
     debounce: debounce
   };
-
 })();

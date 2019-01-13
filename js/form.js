@@ -1,181 +1,183 @@
 'use strict';
+// Блок работы с формой
 
 (function () {
-
-  // валидация формы
-  var form = document.querySelector('.ad-form');
-  var title = form.querySelector('#title');
-  var houseType = form.querySelector('#type');
-  var price = form.querySelector('#price');
-  var arrivalTime = form.querySelector('#timein');
-  var departureTime = form.querySelector('#timeout');
-  var roomQuantity = form.querySelector('#room_number');
-  var guestsQuantity = form.querySelector('#capacity');
-  var description = form.querySelector('#description');
-  var submitButton = form.querySelector('.ad-form__submit');
-  var resetButton = form.querySelector('.ad-form__reset');
-  var options = guestsQuantity.querySelectorAll('option');
-  var mainPin = document.querySelector('.map__pin--main');
-  var inputsValid = [price, title];
-  var successMessage = document.querySelector('.success');
-  var userMap = document.querySelector('.map');
-  var fieldsets = form.querySelectorAll('fieldset');
-
-  var houseTypeMap = {
-    'bungalo': {
-      MIN_VALUE: '0',
-      PLACEHOLDER: '0',
-    },
-    'flat': {
-      MIN_VALUE: '1000',
-      PLACEHOLDER: '1 000',
-    },
-    'house': {
-      MIN_VALUE: '5000',
-      PLACEHOLDER: '5 000',
-    },
-    'palace': {
-      MIN_VALUE: '10000',
-      PLACEHOLDER: '10 000'
-    }
+  var MAX_ROOM_NUMBER = 100;
+  var NO_GUESTS_VALUE = 0;
+  var MinPrice = {
+    'bungalo': '0',
+    'flat': '1000',
+    'house': '5000',
+    'palace': '10000'
   };
 
-  var roomQuantityMap = {
-    '1': ['1'],
-    '2': ['1', '2'],
-    '3': ['1', '2', '3'],
-    '100': ['0']
-  };
+  var adForm = document.querySelector('.ad-form');
+  var adFormFieldsets = adForm.querySelectorAll('fieldset');
+  var addressInput = adForm.querySelector('#address');
+  var priceInput = adForm.querySelector('#price');
+  var typeField = adForm.querySelector('#type');
+  var checkInField = adForm.querySelector('#timein');
+  var checkOutField = adForm.querySelector('#timeout');
+  var capacityField = adForm.querySelector('#capacity');
+  var roomNumberField = adForm.querySelector('#room_number');
+  var resetButton = adForm.querySelector('.ad-form__reset');
+  var successBlock = document.querySelector('.success');
 
-  // соответсвие значения поля цены полю жилья
-  var onMinPrice = function () {
-    price.min = houseTypeMap[houseType.value].MIN_VALUE;
-    price.placeholder = houseTypeMap[houseType.value].PLACEHOLDER;
-  };
-
-  // соответсвие значения поля времени приезда полю времени отъезда
-  var setTime = function (element, value) {
-    element.value = value;
-  };
-
-  // соответсвие значения поля количества гостей полю количества комнат
-  var onCapacityChange = function () {
-    options.forEach(function (element) {
-      element.disabled = !roomQuantityMap[roomQuantity.value].includes(element.value);
-    });
-    guestsQuantity.value = roomQuantityMap[roomQuantity.value].includes(guestsQuantity.value) ? guestsQuantity.value : roomQuantityMap[roomQuantity.value][0];
-  };
-
-  // проверка на валидность поля
-  var validityInput = function () {
-    for (var i = 0; i < inputsValid.length; i++) {
-      var validity = inputsValid[i].validity.valid;
-      if (!validity) {
-        inputsValid[i].classList.remove('invalid-field');
-        inputsValid.offsetWidth = inputsValid[i].offsetWidth;
-        inputsValid[i].classList.add('invalid-field');
-      } else {
-        inputsValid[i].classList.remove('invalid-field');
-      }
-    }
-  };
-
-  houseType.addEventListener('input', onMinPrice);
-  arrivalTime.addEventListener('input', function (evt) {
-    setTime(departureTime, evt.target.value);
-  });
-  departureTime.addEventListener('input', function (evt) {
-    setTime(arrivalTime, evt.target.value);
-  });
-  roomQuantity.addEventListener('input', onCapacityChange);
-
-  submitButton.addEventListener('click', function () {
-    validityInput();
-  });
-
-  submitButton.addEventListener('keydown', function (evt) {
-    window.utils.isEnterEvent(evt, validityInput);
-  });
-
-  // показать/скрыть сообщение успешной отправки формы
-  var showSuccessMessage = function () {
-    successMessage.classList.remove('hidden');
-    successMessage.addEventListener('click', closeSuccesMessage);
-  };
-
-  var closeSuccesMessage = function () {
-    successMessage.classList.add('hidden');
-  };
-
-  document.addEventListener('keydown', function (evt) {
-    window.utils.isEscEvent(evt, closeSuccesMessage);
-  });
-
-  // показать/скрыть сообщение об ошибке загрузки
-  var showErrorMessage = function (errorMessage) {
-    var node = window.backend.onLoadError(errorMessage);
-    var onErrorClick = function () {
-      node.remove();
-      document.removeEventListener('click', onErrorClick);
-      document.removeEventListener('keydown', onErrorEscPress);
-    };
-
-    var onErrorEscPress = function (evt) {
-      window.utils.isEscEvent(evt, onErrorClick);
-    };
-
-    document.addEventListener('click', onErrorClick);
-    document.addEventListener('keydown', onErrorEscPress);
-  };
-
-  // сброс формы
-  var resetForm = function () {
-    setTimeout(function () {
-      window.page.fillAddress();
-    });
-    title.value = null;
-    description.value = null;
-    price.placeholder = 0;
-    price.value = null;
-    price.min = 0;
-    guestsQuantity.value = '1';
-    mainPin.style = 'left: 570px; top: 375px';
-    onCapacityChange();
-    for (var i = 0; i < inputsValid.length; i++) {
-      if (inputsValid[i].classList.contains('invalid-field')) {
-        inputsValid[i].classList.remove('invalid-field');
-      }
-    }
-  };
-
-  var deactivatePage = function () {
-    form.classList.add('ad-form--disabled');
-    userMap.classList.add('map--faded');
-    fieldsets.forEach(function (item) {
+  // Изначальное состояние формы - добавляем полям атрибут disabled
+  var disableForm = function () {
+    adFormFieldsets.forEach(function (item) {
       item.setAttribute('disabled', 'disabled');
     });
-    resetForm();
-    window.card.deleteCard();
-    window.map.resetPins();
-    window.page.loadPage();
   };
 
-  resetButton.addEventListener('click', deactivatePage);
+  // Функция для оживления формы
+  var activateForm = function () {
+    adForm.classList.remove('ad-form--disabled');
+    adFormFieldsets.forEach(function (item) {
+      item.removeAttribute('disabled');
+    });
+  };
 
-  resetButton.addEventListener('keydown', function (evt) {
-    window.utils.isEnterEvent(evt, deactivatePage);
+  // Устанавливаем зависимость типа жилья и минимальной цены
+  var setMinPrice = function (price) {
+    priceInput.min = price;
+    priceInput.placeholder = price;
+  };
+
+  typeField.addEventListener('change', function (evt) {
+    setMinPrice(MinPrice[evt.target.value]);
   });
 
-  form.addEventListener('submit', function (evt) {
-    window.backend.save(new FormData(form), function () {
-      deactivatePage();
-      showSuccessMessage();
-    }, showErrorMessage);
+  // При нажатии на кнопку отправки проверяется, что цена не меньше минимальной для конкретного типа жилья
+  var submit = adForm.querySelector('.ad-form__element--submit');
+  submit.addEventListener('click', function () {
+    priceInput.min = MinPrice[typeField.value];
+  });
+
+  // Устанавливаем зависимость времени заезда и выезда
+  checkInField.addEventListener('change', function (evt) {
+    checkOutField.value = evt.target.value;
+  });
+
+  checkOutField.addEventListener('change', function (evt) {
+    checkInField.value = evt.target.value;
+  });
+
+  // Делаем невозможным выбор кол-ва гостей до выбора кол-ва комнат, закрепляем первоначальный выбор соответствующего количества гостей
+  var setInitialCapacity = function () {
+    var capacityOption = capacityField.querySelectorAll('option');
+    capacityOption.forEach(function (item) {
+      item.setAttribute('disabled', 'disabled');
+
+      if (item.selected) {
+        item.removeAttribute('disabled');
+      }
+    });
+  };
+  setInitialCapacity();
+
+  // Устанавливаем зависимость кол-ва комнат и гостей
+  var setCapacity = function (evt) {
+    if (+roomNumberField.value === MAX_ROOM_NUMBER) {
+      capacityField.value = NO_GUESTS_VALUE;
+    } else {
+      capacityField.value = roomNumberField.value;
+    }
+
+    for (var i = 0; i < capacityField.length; i++) {
+      var option = capacityField.options[i];
+      var noGuests = +option.value === NO_GUESTS_VALUE;
+      var tooManyGuests = +option.value > +evt.target.value;
+      if (+evt.target.value !== MAX_ROOM_NUMBER) {
+        option.disabled = noGuests || tooManyGuests;
+      } else {
+        option.disabled = !noGuests;
+      }
+    }
+  };
+
+  roomNumberField.addEventListener('change', setCapacity);
+
+  // Функция для заполнения в форме поля адреса согласно координатам главной метки
+  var setAddress = function (width, height, pin) {
+    var mainPinX = Math.round(pin.offsetLeft + width / 2);
+    var mainPinY = Math.round(pin.offsetTop + height);
+    addressInput.value = mainPinX + ', ' + mainPinY;
+  };
+
+  // Добавляем красную рамку ошибки невалидным элементам и убираем ее при исправлении значения
+  var inputs = adForm.querySelectorAll('input, select, textarea');
+  inputs.forEach(function (input) {
+    input.addEventListener('invalid', function () {
+      input.classList.add('error');
+    });
+    input.addEventListener('input', function () {
+      if (input.validity.valid) {
+        input.classList.remove('error');
+      }
+    });
+  });
+
+  // Функция сброса формы
+  var resetForm = function () {
+    adForm.reset();
+    priceInput.placeholder = MinPrice[typeField.value];
+    adForm.classList.add('ad-form--disabled');
+    inputs.forEach(function (input) {
+      input.classList.remove('error');
+    });
+    window.images.resetImages();
+  };
+
+  // Функция деактивации страницы
+  var deactivatePage = function () {
+    resetForm();
+    window.map.resetMap();
+    window.filters.resetFilters();
+    window.map.setInitialPage();
+  };
+
+  // Реализуем сброс страницы в исходное неактивное состояние без перезагрузки
+  resetButton.addEventListener('click', function () {
+    deactivatePage();
+  });
+
+  // Появление и закрытие окна об успешном заполнении формы
+  var closeSuccessBlock = function () {
+    successBlock.classList.add('hidden');
+    document.removeEventListener('click', successBlockClickHandler);
+    document.removeEventListener('keydown', successBlockEscPressHandler);
+  };
+
+  var successBlockClickHandler = function () {
+    closeSuccessBlock();
+  };
+
+  var successBlockEscPressHandler = function (evt) {
+    window.utils.isEscKeycode(evt, closeSuccessBlock);
+  };
+
+  var adFormSubmitSuccessHandler = function () {
+    deactivatePage();
+    successBlock.classList.remove('hidden');
+    document.activeElement.blur();
+    document.addEventListener('click', closeSuccessBlock);
+    document.addEventListener('keydown', successBlockEscPressHandler);
+  };
+
+  // Появление окна об ошибке в отправке данных на сервер
+  var adFormSubmitErrorHandler = function (errorMessage) {
+    window.createErrorMessage(errorMessage);
+  };
+
+  adForm.addEventListener('submit', function (evt) {
+    window.backend.upload(adFormSubmitSuccessHandler, adFormSubmitErrorHandler, new FormData(adForm));
     evt.preventDefault();
   });
 
   window.form = {
-    resetForm: resetForm,
-    showErrorMessage: showErrorMessage
+    disableForm: disableForm,
+    activateForm: activateForm,
+    setAddress: setAddress
   };
 })();

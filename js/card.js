@@ -1,80 +1,106 @@
 'use strict';
+// Блок создания и вставки в разметку карточек объявлений
+
 (function () {
-
-  var userMap = document.querySelector('.map');
-
-  // отрисовка карточки объявления
-  var renderCard = function (card) {
-
-    var translateHouseType = {
-      flat: 'Квартира',
-      bungalo: 'Бунгало',
-      house: 'Дом',
-      palace: 'Дворец'
-    };
-
-    var renderFeatures = function (features) {
-      var featuresFragment = document.createDocumentFragment();
-      for (var i = 0; i < features.length; i++) {
-        var featuresElement = document.createElement('li');
-        featuresElement.className = 'popup__feature popup__feature--' + features[i];
-        featuresFragment.appendChild(featuresElement);
-      }
-      return featuresFragment;
-    };
-
-    var renderPhotos = function (photos) {
-      var photosFragment = document.createDocumentFragment();
-      for (var i = 0; i < photos.length; i++) {
-        var photosTemplate = document.querySelector('template')
-          .content
-          .querySelector('.popup__photos');
-        var photosElement = photosTemplate.cloneNode(true);
-        photosElement.querySelector('img').src = photos[i];
-        photosElement.querySelector('img').width = 40;
-        photosElement.querySelector('img').height = 40;
-        photosFragment.appendChild(photosElement);
-      }
-      return photosFragment;
-    };
-
-    var cardTemplate = document.querySelector('template')
-      .content
-      .querySelector('.map__card');
-    var cardElement = cardTemplate.cloneNode(true);
-    cardElement.querySelector('.popup__avatar').src = card.author.avatar;
-    cardElement.querySelector('.popup__title').textContent = card.offer.title;
-    cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
-    cardElement.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
-    cardElement.querySelector('.popup__type').textContent = translateHouseType[card.offer.type];
-    cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
-    cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
-    cardElement.querySelector('.popup__features').textContent = '';
-    cardElement.querySelector('.popup__features').appendChild(renderFeatures(card.offer.features));
-    cardElement.querySelector('.popup__description').textContent = card.offer.description;
-    cardElement.querySelector('.popup__photos').textContent = '';
-    cardElement.querySelector('.popup__photos').appendChild(renderPhotos(card.offer.photos));
-
-    userMap.insertBefore(cardElement, document.querySelector('.map__filters-container'));
+  var Text = {
+    PRICE: '₽/ночь',
+    CHECKIN: 'Заезд после ',
+    CHECKOUT: ', выезд до ',
+    ROOMS: ['комната', 'комнаты', 'комнат'],
+    GUESTS: ['гостя', 'гостей', 'гостей']
+  };
+  var typeEnglishToRussian = {
+    'flat': 'Квартира',
+    'bungalo': 'Бунгало',
+    'house': 'Дом',
+    'palace': 'Дворец'
   };
 
-  // закрытие карточки объявления
-  var deleteCard = function () {
-    var mapCard = document.querySelector('.map__card');
-    if (mapCard) {
-      mapCard.remove();
+  var mapFilters = document.querySelector('.map__filters-container');
+  var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
+  var photoTemplate = document.querySelector('template').content.querySelector('.popup__photo');
+
+  // Функция для создания списка удобств
+  var renderFeaturesList = function (featuresList) {
+    var fragment = document.createDocumentFragment();
+    featuresList.forEach(function (item) {
+      var featureItem = document.createElement('li');
+      featureItem.classList.add('popup__feature');
+      featureItem.classList.add('popup__feature--' + item);
+      fragment.appendChild(featureItem);
+    });
+    return fragment;
+  };
+
+  // Функция для создания списка фотографий
+  var renderPhotosList = function (photosList) {
+    var fragment = document.createDocumentFragment();
+    photosList.forEach(function (item) {
+      var photo = photoTemplate.cloneNode();
+      photo.src = item;
+      fragment.appendChild(photo);
+    });
+    return fragment;
+  };
+
+  var mapCardEscPressHandler = function (evt) {
+    window.utils.isEscKeycode(evt, closeMapCard);
+  };
+
+  // Функция для создания DOM-элемента объявления и заполнения его данными из массива
+  var renderMapCard = function (mapCardElement) {
+    var mapCard = mapCardTemplate.cloneNode(true);
+
+    mapCard.querySelector('.popup__title').textContent = mapCardElement.offer.title;
+    mapCard.querySelector('.popup__text--address').textContent = mapCardElement.offer.address;
+    mapCard.querySelector('.popup__text--price').textContent = mapCardElement.offer.price + Text.PRICE;
+    mapCard.querySelector('.popup__type').textContent = typeEnglishToRussian[mapCardElement.offer.type];
+    mapCard.querySelector('.popup__text--capacity').textContent = mapCardElement.offer.rooms + ' ' + window.utils.setDeclension(mapCardElement.offer.rooms, Text.ROOMS) + ' для ' + mapCardElement.offer.guests + ' ' + window.utils.setDeclension(mapCardElement.offer.guests, Text.GUESTS);
+    mapCard.querySelector('.popup__text--time').textContent = Text.CHECKIN + mapCardElement.offer.checkin + Text.CHECKOUT + mapCardElement.offer.checkout;
+    mapCard.querySelector('.popup__features').innerHTML = '';
+    mapCard.querySelector('.popup__features').appendChild(renderFeaturesList(mapCardElement.offer.features));
+    mapCard.querySelector('.popup__description').textContent = mapCardElement.offer.description;
+    mapCard.querySelector('.popup__photos').innerHTML = '';
+    mapCard.querySelector('.popup__photos').appendChild(renderPhotosList(mapCardElement.offer.photos));
+    mapCard.querySelector('.popup__avatar').src = mapCardElement.author.avatar;
+
+    var popupClose = mapCard.querySelector('.popup__close');
+    var popupCloseClickHandler = function () {
+      closeMapCard();
+    };
+    var popupCloseKeydownHandler = function (evt) {
+      window.utils.isEnterKeycode(evt, closeMapCard);
+    };
+    popupClose.addEventListener('click', popupCloseClickHandler);
+    popupClose.addEventListener('keydown', popupCloseKeydownHandler);
+    document.addEventListener('keydown', mapCardEscPressHandler);
+
+    return mapCard;
+  };
+
+  // Функция для помещения объявления в разметку - открываем соответствующее объявление, убираем предыдущее открытое
+  var openMapCard = function (mapCard) {
+    var card = window.map.map.querySelector('.map__card');
+    if (card) {
+      closeMapCard();
     }
-    window.map.deactivatePin();
+    var fragment = document.createDocumentFragment();
+    fragment.appendChild(renderMapCard(mapCard));
+    window.map.map.insertBefore(fragment, mapFilters);
   };
 
-  // закрытие карточки объявления при ESC
-  document.addEventListener('keydown', function (evt) {
-    window.utils.isEscEvent(evt, deleteCard);
-  });
+  // Закрываем объявление, удаляем обработчик события
+  var closeMapCard = function () {
+    var popup = document.querySelector('.map__card');
+    if (!popup) {
+      return;
+    }
+    window.map.map.removeChild(popup);
+    document.removeEventListener('keydown', mapCardEscPressHandler);
+  };
 
   window.card = {
-    renderCard: renderCard,
-    deleteCard: deleteCard
+    openMapCard: openMapCard,
+    closeMapCard: closeMapCard
   };
-
 })();

@@ -1,64 +1,49 @@
 'use strict';
 
-// загрузка похожих объявлений с сервера
 (function () {
-  var URL = 'https://js.dump.academy/keksobooking';
+  var URL_UPLOAD = 'https://js.dump.academy/keksobooking';
+  var URL_LOAD = 'https://js.dump.academy/keksobooking/data';
+  var STATUS_OK = 200;
+  var TIMEOUT = 10000;
 
-  // обработка ошибок
-  var setup = function (onLoad, onError) {
+  var getXHR = function (onLoad, onError, method, url, data) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
+
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === STATUS_OK) {
         onLoad(xhr.response);
-        window.advertsData = xhr.response;
       } else {
-        onError('Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
+        onError('Произошла ошибка. Перезагрузите, пожалуйста, страницу. Статус ответа: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
+
     xhr.addEventListener('error', function () {
       onError('Произошла ошибка соединения');
     });
+
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
-    xhr.timeout = 100000;
-    return xhr;
+
+    xhr.timeout = TIMEOUT;
+
+    xhr.open(method, url);
+    xhr.send(data ? data : '');
   };
 
-  // загрузка данных с сервера
+  // Функция отправки данных на сервер
+  var upload = function (onLoad, onError, data) {
+    getXHR(onLoad, onError, 'POST', URL_UPLOAD, data);
+  };
+
+  // Функция получения данных с сервера
   var load = function (onLoad, onError) {
-    var xhr = setup(onLoad, onError);
-    xhr.open('GET', URL + '/data');
-    xhr.send();
-  };
-
-  // отправка данных на сервер
-  var save = function (data, onLoad, onError) {
-    var xhr = setup(onLoad, onError);
-    xhr.open('POST', URL);
-    xhr.send(data);
-  };
-
-  // элемент с текстом ошибки
-  var onLoadError = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 3; width: 100%; height: 100%; padding-top: 300px; text-align: center; background-color: rgba(0, 0, 0, 0.8)';
-    node.style.position = 'fixed';
-    node.style.left = '0';
-    node.style.top = '0';
-    node.style.fontSize = '50px';
-    node.style.color = '#ffffff';
-    node.style.fontWeight = '700';
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
-    return node;
+    getXHR(onLoad, onError, 'GET', URL_LOAD);
   };
 
   window.backend = {
-    load: load,
-    save: save,
-    onLoadError: onLoadError
+    upload: upload,
+    load: load
   };
-
 })();

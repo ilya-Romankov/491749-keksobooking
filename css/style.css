@@ -1,6 +1,3 @@
-/* Общие стили. Каркас
-   ========================================================================== */
-
 @font-face {
   font-family: "Roboto";
   src: url("../fonts/Roboto-Bold.woff2") format("woff2"),
@@ -81,8 +78,7 @@ fieldset {
 }
 
 
-/* Карта с объявлениями
-   ========================================================================== */
+/* Map */
 
 .promo {
   position: absolute;
@@ -94,14 +90,19 @@ fieldset {
   height: 45px;
 
   -webkit-transform: translateX(-50%);
+
       -ms-transform: translateX(-50%);
+
           transform: translateX(-50%);
 }
 
 .map {
   position: relative;
+
   display: -webkit-box;
+
   display: -ms-flexbox;
+
   display: flex;
   -webkit-box-align: end;
       -ms-flex-align: end;
@@ -110,8 +111,8 @@ fieldset {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-
   overflow: hidden;
+
   height: 750px;
 
   background-color: #82bcc0;
@@ -137,7 +138,9 @@ fieldset {
   height: 100%;
 
   -webkit-transition: opacity 300ms ease-in;
+
   -o-transition: opacity 300ms ease-in;
+
   transition: opacity 300ms ease-in;
 
   opacity: 0;
@@ -159,11 +162,6 @@ fieldset {
 .map--faded .map__overlay {
   opacity: 1;
 }
-
-
-/**
- * Метка объявления
- */
 
 .map__pin {
   position: absolute;
@@ -237,7 +235,9 @@ fieldset {
   padding: 2px 6px 6px;
 
   -webkit-transform: translateY(-7px);
+
       -ms-transform: translateY(-7px);
+
           transform: translateY(-7px);
 
   border: solid 5px #ff5635;
@@ -245,6 +245,7 @@ fieldset {
   background-color: #ffffff;
 
   -webkit-box-sizing: content-box;
+
           box-sizing: content-box;
 }
 
@@ -263,9 +264,13 @@ fieldset {
   height: 156px;
 
   -webkit-transition: -webkit-transform 300ms ease-in;
+
   transition: -webkit-transform 300ms ease-in;
+
   -o-transition: transform 300ms ease-in;
+
   transition: transform 300ms ease-in;
+
   transition: transform 300ms ease-in, -webkit-transform 300ms ease-in;
   -webkit-transform: rotate(120deg) scale(0);
       -ms-transform: rotate(120deg) scale(0);
@@ -294,9 +299,13 @@ fieldset {
   border-bottom: 0;
 
   -webkit-transition: -webkit-transform 300ms ease-in;
+
   transition: -webkit-transform 300ms ease-in;
+
   -o-transition: transform 300ms ease-in;
+
   transition: transform 300ms ease-in;
+
   transition: transform 300ms ease-in, -webkit-transform 300ms ease-in;
   -webkit-transform: translate(-50%, -6px);
       -ms-transform: translate(-50%, -6px);
@@ -326,9 +335,7 @@ fieldset {
 }
 
 
-/**
- * Фильтры объявления
- */
+/* Фильтры */
 
 .map__filters-container {
   width: 100%;
@@ -351,7 +358,9 @@ fieldset {
   margin: 0 auto;
 
   -webkit-transition: opacity 300ms ease-in;
+
   -o-transition: opacity 300ms ease-in;
+
   transition: opacity 300ms ease-in;
 
   opacity: 1;
@@ -474,8 +483,7 @@ fieldset {
 }
 
 
-/* Форма для публикации объявления
-   ========================================================================== */
+/* Форма объявления */
 
 .notice {
   margin: 0 120px;
@@ -829,8 +837,8 @@ fieldset {
   font-weight: 700;
 
   -webkit-box-sizing: content-box;
-          box-sizing: content-box;
 
+          box-sizing: content-box;
   width: 206px;
   height: 60px;
 
@@ -875,8 +883,7 @@ fieldset {
 }
 
 
-/* Футер
-   ========================================================================== */
+/* Футер */
 
 .footer {
   margin-top: 30px;
@@ -884,7 +891,9 @@ fieldset {
   border-top: solid 1px #cccccc;
 
   display: -webkit-box;
+
   display: -ms-flexbox;
+
   display: flex;
   -webkit-box-align: start;
       -ms-flex-align: start;
@@ -926,7 +935,9 @@ fieldset {
   list-style: none;
 
   display: -webkit-box;
+
   display: -ms-flexbox;
+
   display: flex;
 }
 
@@ -994,12 +1005,7 @@ fieldset {
 }
 
 
-/* Вспомогательные экраны
-   ========================================================================== */
-
-/**
- * Карточка объявления
- */
+/* Карточка объявления */
 
 .map__card {
   position: absolute;
@@ -1054,6 +1060,7 @@ fieldset {
   line-height: 40px;
 
   display: block;
+
   content: "×";
 
   color: #000000;
@@ -1160,13 +1167,9 @@ fieldset {
   border: 2px solid #ff5635;
 }
 
+/* Оверлей */
 
-/**
- * Сообщения об успешном и неуспешном создании объявления
- */
-
-.success,
-.error {
+.success {
   position: fixed;
   top: 0;
   left: 0;
@@ -1187,8 +1190,7 @@ fieldset {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.success__message,
-.error__message {
+.success__message {
   position: relative;
 
   color: #ffffff;
@@ -1196,8 +1198,7 @@ fieldset {
   font-weight: 700;
 }
 
-.success__message::before,
-.error__message::before {
+.success__message::before {
   content: "";
   position: absolute;
 
@@ -1216,35 +1217,75 @@ fieldset {
           transform: translateX(-50%);
 }
 
-.error__message::before {
-  background-image: url("../img/muffin-red.svg");
+.error {
+  border: 4px solid red !important;
+  border-radius: 10px !important;
 }
 
-.error__button {
-  padding: 10px;
+.error-block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
 
-  font-size: 22px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+
+  padding-top: 300px;
+  padding-left: 150px;
+  padding-right: 150px;
+
+  text-align: center;
+  vertical-align: middle;
+
+  background-color: rgba(255, 0, 0, 0.5);
+  font-size: 30px;
+  color: #000000;
   font-weight: 700;
-
-  -webkit-box-sizing: content-box;
-          box-sizing: content-box;
-
-  color: white;
-  border: 4px solid #ff5635;
-  background-color: #ff5635;
-  border-radius: 8px;
 }
 
-.error__button:hover,
-.error__button:focus {
-  opacity: 0.8;
+.error-block__close {
+  width: 38px;
+  height: 38px;
+  font-size: 0;
+  border: 0;
+  cursor: pointer;
+  position: absolute;
+  top: 78px;
+  right: 90px;
+  padding: 0;
+  background-color: transparent;
 }
 
-.error__button:focus {
-  outline: none;
+.error-block__close::before,
+.error-block__close::after {
+  content: "";
+  position: absolute;
+  width: 40px;
+  height: 10px;
+  background-color: #000000;
+  border-radius: 1px;
+  left: -2px;
+  top: 14px;
 }
 
-.error__button:active {
-  outline: none;
-  opacity: 0.6;
+.error-block__close::before {
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.error-block__close::after {
+  -webkit-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+.error-block__close:hover.error-block__close::before,
+.error-block__close:hover.error-block__close::after {
+  background-color: #696969;
 }

@@ -43,8 +43,16 @@
     return fragment;
   };
 
+  var deleteActiveClass = function () {
+    var activePin = document.querySelector('.map__pin--active');
+    if (activePin !== null) {
+      activePin.classList.remove('map__pin--active');
+    }
+  };
+
   var mapCardEscPressHandler = function (evt) {
     window.utils.isEscKeycode(evt, closeMapCard);
+    deleteActiveClass();
   };
 
   // Функция для создания DOM-элемента объявления и заполнения его данными из массива
@@ -66,10 +74,12 @@
 
     var popupClose = mapCard.querySelector('.popup__close');
     var popupCloseClickHandler = function () {
+      deleteActiveClass();
       closeMapCard();
     };
     var popupCloseKeydownHandler = function (evt) {
       window.utils.isEnterKeycode(evt, closeMapCard);
+      deleteActiveClass();
     };
     popupClose.addEventListener('click', popupCloseClickHandler);
     popupClose.addEventListener('keydown', popupCloseKeydownHandler);
@@ -95,6 +105,7 @@
     if (!popup) {
       return;
     }
+
     window.map.map.removeChild(popup);
     document.removeEventListener('keydown', mapCardEscPressHandler);
   };

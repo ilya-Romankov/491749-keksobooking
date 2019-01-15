@@ -9,7 +9,6 @@
   var mapPinsList = document.querySelector('.map__pins');
   var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var mapPins = [];
-
   // Функция для создания меток для карты с данными из массива
   var renderMapPin = function (mapPinElement) {
     var mapPin = mapPinTemplate.cloneNode(true);
@@ -19,7 +18,16 @@
     mapPin.querySelector('img').src = mapPinElement.author.avatar;
     mapPin.querySelector('img').alt = mapPinElement.offer.title;
 
-    var mapPinClickHandler = function () {
+    var getActivePin = function (evt) {
+      var activePin = document.querySelector('.map__pin--active');
+      if (activePin !== null) {
+        activePin.classList.remove('map__pin--active');
+      }
+      evt.currentTarget.classList.add('map__pin--active');
+    };
+
+    var mapPinClickHandler = function (evt) {
+      getActivePin(evt);
       window.card.openMapCard(mapPinElement);
     };
     var mapPinKeydownHandler = function (evt) {
